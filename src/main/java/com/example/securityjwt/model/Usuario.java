@@ -23,7 +23,7 @@ public class Usuario implements UserDetails {
     private String username;
     private String password;
     private String name;
-    private Boolean ativo;
+    private boolean ativo;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Perfil> perfis = new ArrayList<>();

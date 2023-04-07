@@ -13,11 +13,16 @@ import java.io.IOException;
 
 public class AutenticacaoTokenFilter extends OncePerRequestFilter {
     private final TokenService tokenService;
-    private final UsuarioRepository repository;
+//    private final UsuarioRepository repository;
 
     public AutenticacaoTokenFilter(TokenService tokenService, UsuarioRepository repository){
         this.tokenService = tokenService;
-        this.repository = repository;
+//        this.repository = repository;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/auth");
     }
 
     @Override
