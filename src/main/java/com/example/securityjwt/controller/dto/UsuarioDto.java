@@ -15,5 +15,6 @@ public class UsuarioDto {
     private String username;
     @NotBlank
     private String password;
+    private Boolean ativo;
     private Perfil perfil;
 }

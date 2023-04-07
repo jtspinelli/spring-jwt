@@ -55,12 +55,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http
+                .csrf().disable()
+                .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/auth").permitAll() // permite o acesso ao endpoint de autenticação
                 .antMatchers(HttpMethod.POST, "/auth/cadastrar").permitAll() // permite o acesso ao endpoint de autenticação
                 .anyRequest().authenticated()
-                .and().csrf().disable() // desabilita o csrf (necessário para o uso do token)
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // aceita apenas chamadas com o token
+                // desabilita o csrf (necessário para o uso do token)
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // aceita apenas chamadas com o token
                 .and()
                 .addFilterBefore( // adicionar o filtro do token JWT
                         new AutenticacaoTokenFilter(tokenService, repository),
@@ -68,8 +70,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 );
     }
 
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http.authorizeRequests()
+//                .antMatchers(HttpMethod.POST, "/auth").permitAll() // permite o acesso ao endpoint de autenticação
+//                .antMatchers(HttpMethod.POST, "/auth/cadastrar").permitAll() // permite o acesso ao endpoint de autenticação
+//                .and()
+//                .authorizeRequests()
+//                .anyRequest().authenticated()
+//                .and().csrf().disable() // desabilita o csrf (necessário para o uso do token)
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // aceita apenas chamadas com o token
+//                .and()
+//                .addFilterBefore( // adicionar o filtro do token JWT
+//                        new AutenticacaoTokenFilter(tokenService, repository),
+//                        UsernamePasswordAuthenticationFilter.class
+//                );
+//    }
+
     // removendo a configuração do WebSecurity padrão
     @Override
     public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/auth");
     }
 }

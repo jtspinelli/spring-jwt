@@ -10,6 +10,7 @@ import com.example.securityjwt.service.TokenService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,12 +27,14 @@ public class AutenticadorController {
     private final TokenService tokenService;
     private final UsuarioRepository repository;
     private final PerfilRepository perfilRepository;
+    private final PasswordEncoder encoder;
 
-    public AutenticadorController(AuthenticationManager authenticationManager, TokenService tokenService, UsuarioRepository repository, PerfilRepository perfilRepository) {
+    public AutenticadorController(AuthenticationManager authenticationManager, TokenService tokenService, UsuarioRepository repository, PerfilRepository perfilRepository, PasswordEncoder encoder) {
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
         this.repository = repository;
         this.perfilRepository = perfilRepository;
+        this.encoder = encoder;
     }
 
     @PostMapping
@@ -52,7 +55,8 @@ public class AutenticadorController {
 
         var usuario = Usuario.builder()
                 .username(usuarioDto.getUsername())
-                .password(usuarioDto.getPassword())
+                .password(encoder.encode(usuarioDto.getPassword()))
+                .ativo(usuarioDto.getAtivo())
                 .perfis(List.of(usuarioDto.getPerfil()))
                 .build();
         repository.save(usuario);
