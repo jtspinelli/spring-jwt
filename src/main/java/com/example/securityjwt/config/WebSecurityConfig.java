@@ -1,7 +1,9 @@
 package com.example.securityjwt.config;
 
 import com.example.securityjwt.model.Perfil;
+import com.example.securityjwt.model.Usuario;
 import com.example.securityjwt.repository.PerfilRepository;
+import com.example.securityjwt.repository.UsuarioRepository;
 import com.example.securityjwt.service.AutenticacaoService;
 import com.example.securityjwt.service.TokenService;
 import com.example.securityjwt.service.UsuarioService;
@@ -18,16 +20,20 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final TokenService tokenService;
+    private final UsuarioRepository usuarioRepository;
     private final PerfilRepository perfilRepository;
     private final AutenticacaoService autenticacaoService;
     private final UsuarioService usuarioService;
 
-    public WebSecurityConfig(TokenService tokenService, PerfilRepository perfilRepository, AutenticacaoService autenticacaoService, UsuarioService usuarioService){
+    public WebSecurityConfig(TokenService tokenService, UsuarioRepository usuarioRepository, PerfilRepository perfilRepository, AutenticacaoService autenticacaoService, UsuarioService usuarioService){
         this.tokenService = tokenService;
+        this.usuarioRepository = usuarioRepository;
         this.perfilRepository = perfilRepository;
         this.autenticacaoService = autenticacaoService;
         this.usuarioService = usuarioService;
@@ -53,17 +59,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         userPerfil.setNome("ROLE_USER");
         this.perfilRepository.save(adminPerfil);
         this.perfilRepository.save(userPerfil);
+
+        var user = new Usuario();
+        user.setAtivo(true);
+        user.setName("admin");
+        user.setUsername("admin");
+        user.setPassword(encoder().encode("admin"));
+        user.setPerfis(List.of(this.perfilRepository.findById(1L).get()));
+        this.usuarioRepository.save(user);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            .antMatchers(HttpMethod.POST, "/auth", "/auth/cadastrar").permitAll() // permite o acesso ao endpoint de autenticação e de cadastro de usuário
-            .antMatchers("/hello/admin").hasAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.POST, "/auth", "/auth/cadastrar").permitAll() // permite o acesso ao endpoint de autenticação e de cadastro de usuário
+                .antMatchers(HttpMethod.GET, "/produto/todos").permitAll()
+                .antMatchers("/hello/admin").hasAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.POST, "/produto").hasAuthority("ROLE_ADMIN")
             .and()
             .authorizeRequests()
-            .anyRequest().authenticated()
+                .anyRequest().authenticated()
             .and().csrf().disable() // desabilita o csrf (necessário para o uso do token)
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // aceita apenas chamadas com o token
             .and()
