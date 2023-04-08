@@ -18,10 +18,11 @@ public class Perfil implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String nome;
 
     @Override
     public String getAuthority() {
-        return null;
+        return this.nome;
     }
 }

@@ -1,6 +1,5 @@
 package com.example.securityjwt.controller.dto;
 
-import com.example.securityjwt.model.Perfil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,5 +15,5 @@ public class UsuarioDto {
     @NotBlank
     private String password;
     private Boolean ativo;
-    private Perfil perfil;
+    private Long perfilId;
 }

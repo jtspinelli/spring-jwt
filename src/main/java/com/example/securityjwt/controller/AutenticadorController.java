@@ -7,6 +7,8 @@ import com.example.securityjwt.model.Usuario;
 import com.example.securityjwt.repository.PerfilRepository;
 import com.example.securityjwt.repository.UsuarioRepository;
 import com.example.securityjwt.service.TokenService;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
@@ -49,18 +51,28 @@ public class AutenticadorController extends CustomExceptionHandler {
 
     @PostMapping("/cadastrar")
     public ResponseEntity<?> cadastrar(@RequestBody @Validated UsuarioDto usuarioDto) {
-        perfilRepository.save(usuarioDto.getPerfil());
+        var perfil = this.perfilRepository.findById(usuarioDto.getPerfilId()).orElse(null);
+        if(usuarioDto.getPerfilId() == 1 || perfil == null)  return ResponseEntity.badRequest().build();
 
         var usuario = Usuario.builder()
                 .username(usuarioDto.getUsername())
                 .password(encoder.encode(usuarioDto.getPassword()))
                 .ativo(true)
-                .perfis(List.of(usuarioDto.getPerfil()))
+                .perfis(List.of(perfil))
                 .build();
-        repository.save(usuario);
+
+        try {
+            repository.save(usuario);
+        } catch (Exception e){
+            if(e instanceof DataIntegrityViolationException) {
+                var usernameUniqueViolation = ((ConstraintViolationException) e.getCause()).getConstraintName().contains("USUARIO(USERNAME NULLS FIRST)");
+                if(usernameUniqueViolation) return ResponseEntity.badRequest().body("Nome de usuário não disponível");
+            }
+
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.created(URI.create("/auth/cadastrar")).build();
     }
-
 }
 
 
