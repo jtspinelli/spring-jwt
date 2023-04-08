@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -15,5 +16,6 @@ public class UsuarioDto {
     @NotBlank
     private String password;
     private Boolean ativo;
+    @NotNull
     private Long perfilId;
 }

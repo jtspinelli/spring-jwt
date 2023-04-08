@@ -50,7 +50,7 @@ public class AutenticadorController extends CustomExceptionHandler {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<?> cadastrar(@RequestBody @Validated UsuarioDto usuarioDto) {
+    public ResponseEntity<?> cadastrar(@RequestBody @Valid UsuarioDto usuarioDto) {
         var perfil = this.perfilRepository.findById(usuarioDto.getPerfilId()).orElse(null);
         if(usuarioDto.getPerfilId() == 1 || perfil == null)  return ResponseEntity.badRequest().build();
 
