@@ -23,6 +23,15 @@ public class ProdutoController extends CustomExceptionHandler {
         return service.listarProdutos();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProdutoById(@PathVariable long id) {
+        var produto = this.service.getProdutoById(id);
+
+        if(produto == null) return ResponseEntity.badRequest().body("Não há Produto com o id informado");
+
+        return ResponseEntity.ok(produto);
+    }
+
     @PostMapping
     public Produto salvarProduto(@RequestBody @Valid ProdutoDto produtoDto){
         var produto = new Produto();

@@ -74,7 +74,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/auth", "/auth/cadastrar").permitAll() // permite o acesso ao endpoint de autenticação e de cadastro de usuário
-                .antMatchers(HttpMethod.GET, "/produto/todos").permitAll()
+                .antMatchers(HttpMethod.GET, "/produto/todos", "/produto/{id}").permitAll()
                 .antMatchers("/hello/admin").hasAuthority("ROLE_ADMIN")
                 .antMatchers(HttpMethod.POST, "/produto").hasAuthority("ROLE_ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/produto/{id}").hasAuthority("ROLE_ADMIN")

@@ -25,7 +25,8 @@ public class AutenticacaoTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         return request.getRequestURI().startsWith("/auth")
-                || request.getRequestURI().equals("/produto/todos");
+                || request.getRequestURI().equals("/produto/todos")
+                || (request.getMethod().equals("GET") && request.getRequestURI().matches("(/produto/)[0-9]+"));
     }
 
     @Override
