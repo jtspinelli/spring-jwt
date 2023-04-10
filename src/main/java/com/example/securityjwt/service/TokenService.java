@@ -3,6 +3,7 @@ package com.example.securityjwt.service;
 import com.example.securityjwt.model.Usuario;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ public class TokenService {
     private Long tempoExpiracao;
 
     @Value("${security.jwt.secret}")
+    @Getter
     private String secret;
 
     public String gerarToken(Authentication authentication){

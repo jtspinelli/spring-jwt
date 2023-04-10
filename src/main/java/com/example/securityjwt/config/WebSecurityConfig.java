@@ -3,6 +3,7 @@ package com.example.securityjwt.config;
 import com.example.securityjwt.repository.UsuarioRepository;
 import com.example.securityjwt.service.AutenticacaoService;
 import com.example.securityjwt.service.TokenService;
+import com.example.securityjwt.service.UsuarioService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,11 +23,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final TokenService tokenService;
     private final UsuarioRepository repository;
     private final AutenticacaoService autenticacaoService;
+    private final UsuarioService usuarioService;
 
-    public WebSecurityConfig(UsuarioRepository repository, TokenService tokenService, AutenticacaoService autenticacaoService){
+    public WebSecurityConfig(UsuarioRepository repository, TokenService tokenService, AutenticacaoService autenticacaoService, UsuarioService usuarioService){
         this.repository = repository;
         this.tokenService = tokenService;
         this.autenticacaoService = autenticacaoService;
+        this.usuarioService = usuarioService;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // aceita apenas chamadas com o token
                 .and()
                 .addFilterBefore( // adicionar o filtro do token JWT
-                        new AutenticacaoTokenFilter(tokenService, repository),
+                        new AutenticacaoTokenFilter(tokenService, repository, usuarioService),
                         UsernamePasswordAuthenticationFilter.class
                 );
     }

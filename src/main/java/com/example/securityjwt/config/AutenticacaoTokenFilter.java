@@ -3,6 +3,10 @@ package com.example.securityjwt.config;
 
 import com.example.securityjwt.repository.UsuarioRepository;
 import com.example.securityjwt.service.TokenService;
+import com.example.securityjwt.service.UsuarioService;
+import io.jsonwebtoken.Jwts;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -13,11 +17,12 @@ import java.io.IOException;
 
 public class AutenticacaoTokenFilter extends OncePerRequestFilter {
     private final TokenService tokenService;
-//    private final UsuarioRepository repository;
+    private final UsuarioService usuarioService;
 
-    public AutenticacaoTokenFilter(TokenService tokenService, UsuarioRepository repository){
+    public AutenticacaoTokenFilter(TokenService tokenService, UsuarioRepository repository, UsuarioService usuarioService){
         this.tokenService = tokenService;
 //        this.repository = repository;
+        this.usuarioService = usuarioService;
     }
 
     @Override
@@ -35,7 +40,16 @@ public class AutenticacaoTokenFilter extends OncePerRequestFilter {
     }
 
     private void autenticarCliente(String token) {
-//        var idUsuario = tokenService.getIdUsuario
+        var user = Jwts.parser().setSigningKey(this.tokenService.getSecret()).parseClaimsJws(token).getBody().getSubject();
+
+        if (user != null) {
+            SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                    user,
+                    null,
+                    this.usuarioService.getAuthoritiesFromUser(this.tokenService.getIdUsuario(token))
+                ));
+        }
     }
 
     private String recuperarToken(HttpServletRequest request) {
