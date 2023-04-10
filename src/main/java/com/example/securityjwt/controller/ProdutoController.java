@@ -3,6 +3,7 @@ package com.example.securityjwt.controller;
 import com.example.securityjwt.controller.dto.ProdutoDto;
 import com.example.securityjwt.model.Produto;
 import com.example.securityjwt.service.ProdutoService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,5 +31,16 @@ public class ProdutoController extends CustomExceptionHandler {
         produto.setValor(produtoDto.getValor());
 
         return service.salvarProduto(produto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> excluirProduto(@PathVariable long id){
+        var produto = this.service.getProdutoById(id);
+
+        if(produto == null) return ResponseEntity.badRequest().body("Não há Produto com o id informado");
+
+        if(!this.service.excluirProduto(produto)) return ResponseEntity.internalServerError().body("Erro ao excluir o Produto");
+
+        return ResponseEntity.ok().build();
     }
 }

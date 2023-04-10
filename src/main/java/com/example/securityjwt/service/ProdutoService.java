@@ -14,11 +14,24 @@ public class ProdutoService {
         this.repository = repository;
     }
 
+    public Produto getProdutoById(long id){
+        return this.repository.findById(id).orElse(null);
+    }
+
     public List<Produto> listarProdutos(){
         return repository.findAll();
     }
 
     public Produto salvarProduto(Produto produto){
         return repository.save(produto);
+    }
+
+    public boolean excluirProduto(Produto produto){
+        try {
+            repository.delete(produto);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -77,6 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/produto/todos").permitAll()
                 .antMatchers("/hello/admin").hasAuthority("ROLE_ADMIN")
                 .antMatchers(HttpMethod.POST, "/produto").hasAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/produto/{id}").hasAuthority("ROLE_ADMIN")
             .and()
             .authorizeRequests()
                 .anyRequest().authenticated()
@@ -84,8 +85,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // aceita apenas chamadas com o token
             .and()
             .addFilterBefore( // adicionar o filtro do token JWT que criamos
-                    new AutenticacaoTokenFilter(tokenService, usuarioService),
-                    UsernamePasswordAuthenticationFilter.class
+                new AutenticacaoTokenFilter(tokenService, usuarioService),
+                UsernamePasswordAuthenticationFilter.class
             );
     }
 
